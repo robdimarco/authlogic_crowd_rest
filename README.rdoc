@@ -1,0 +1,1 @@
+Gem to allow authlogic to validate with Atlassian Crowd
