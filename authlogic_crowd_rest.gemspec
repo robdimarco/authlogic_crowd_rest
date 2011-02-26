@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
     "README.rdoc",
     "Rakefile",
     "VERSION",
+    "authlogic_crowd_rest.gemspec",
     "lib/authlogic_crowd_rest.rb",
     "lib/authlogic_crowd_rest/acts_as_authentic.rb",
     "lib/authlogic_crowd_rest/session.rb",
