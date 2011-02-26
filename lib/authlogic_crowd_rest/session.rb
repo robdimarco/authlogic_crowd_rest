@@ -6,7 +6,7 @@ module AuthlogicCrowdRest
         include Methods
       end
     end
-    
+
     module Config
       # The URL of your crowd rest API.  Should be
       # something like https://localhost:8095/crowd/rest
@@ -14,99 +14,78 @@ module AuthlogicCrowdRest
       # * <tt>Default:</tt> nil
       # * <tt>Accepts:</tt> String
       def crowd_base_url(value = nil)
-        config(:crowd_ba, value)
+        config(:crowd_base_url, value)
       end
-      alias_method :ldap_host=, :crowd_host
-      
-      # The port of your LDAP server.
+      alias_method :crowd_base_url=, :crowd_base_url
+
+      # The name in crowd for your application
       #
-      # * <tt>Default:</tt> 389
-      # * <tt>Accepts:</tt> Fixnum, integer
-      def ldap_port(value = nil)
-        config(:ldap_port, value, 389)
+      # * <tt>Default:</tt> nil
+      # * <tt>Accepts:</tt> String
+      def crowd_application_name
+        config(:crowd_application_name, value)
       end
-      alias_method :ldap_port=, :ldap_port
-      
-      # Once LDAP authentication has succeeded we need to find the user in the database. By default this just calls the
-      # find_by_ldap_login method provided by ActiveRecord. If you have a more advanced set up and need to find users
-      # differently specify your own method and define your logic in there.
+      alias_method :crowd_application_name=, :crowd_application_name
+
+      # The password in crowd for your application
       #
-      # For example, if you allow users to store multiple ldap logins with their account, you might do something like:
-      #
-      #   class User < ActiveRecord::Base
-      #     def self.find_by_ldap_login(login)
-      #       first(:conditions => ["#{CrowdRestLogin.table_name}.login = ?", login], :join => :ldap_logins)
-      #     end
-      #   end
-      #
-      # * <tt>Default:</tt> :find_by_ldap_login
-      # * <tt>Accepts:</tt> Symbol
-      def find_by_ldap_login_method(value = nil)
-        config(:find_by_ldap_login_method, value, :find_by_ldap_login)
+      # * <tt>Default:</tt> nil
+      # * <tt>Accepts:</tt> String
+      def crowd_application_password
+        config(:crowd_application_password, value)
       end
-      alias_method :find_by_ldap_login_method=, :find_by_ldap_login_method
+      alias_method :crowd_application_password=, :crowd_application_password
     end
-    
+
     module Methods
       def self.included(klass)
         klass.class_eval do
-          attr_accessor :ldap_login
-          attr_accessor :ldap_password
-          validate :validate_by_ldap, :if => :authenticating_with_ldap?
+          validate :validate_by_crowd_rest, :if => :authenticating_with_crowd_rest?
         end
       end
-      
-      # Hooks into credentials to print out meaningful credentials for LDAP authentication.
-      def credentials
-        if authenticating_with_ldap?
-          details = {}
-          details[:ldap_login] = send(login_field)
-          details[:ldap_password] = "<protected>"
-          details
-        else
-          super
-        end
-      end
-      
-      # Hooks into credentials so that you can pass an :ldap_login and :ldap_password key.
-      def credentials=(value)
-        super
-        values = value.is_a?(Array) ? value : [value]
-        hash = values.first.is_a?(Hash) ? values.first.with_indifferent_access : nil
-        if !hash.nil?
-          self.ldap_login = hash[:ldap_login] if hash.key?(:ldap_login)
-          self.ldap_password = hash[:ldap_password] if hash.key?(:ldap_password)
-        end
-      end
-      
+
       private
-        def authenticating_with_ldap?
-          !ldap_host.blank? && (!ldap_login.blank? || !ldap_password.blank?)
+        def authenticating_with_crowd_rest?
+          !(crowd_base_url.blank? || crowd_application_name.blank? || crowd_application_password.blank?)
         end
-        
-        def validate_by_ldap
-          errors.add(:ldap_login, I18n.t('error_messages.ldap_login_blank', :default => "can not be blank")) if ldap_login.blank?
-          errors.add(:ldap_password, I18n.t('error_messages.ldap_password_blank', :default => "can not be blank")) if ldap_password.blank?
+
+        def validate_by_crowd_rest
+          self.invalid_password = false
+
+          errors.add(login_field, I18n.t('error_messages.login_blank', :default => "cannot be blank")) if send(login_field).blank?
+          errors.add(password_field, I18n.t('error_messages.password_blank', :default => "cannot be blank")) if send("protected_#{password_field}").blank?
           return if errors.count > 0
-          
-          ldap = Net::LDAP.new
-          ldap.host = ldap_host
-          ldap.port = ldap_port
-          ldap.auth ldap_login, ldap_password
-          if ldap.bind
-            self.attempted_record = search_for_record(find_by_ldap_login_method, ldap_login)
-            errors.add(:ldap_login, I18n.t('error_messages.ldap_login_not_found', :default => "does not exist")) if attempted_record.blank?
-          else
-            errors.add_to_base(ldap.get_operation_result.message)
+
+          self.attempted_record = search_for_record(find_by_login_method, send(login_field))
+          if attempted_record.blank?
+            generalize_credentials_error_messages? ?
+            add_general_credentials_error :
+              errors.add(login_field, I18n.t('error_messages.login_not_found', :default => "is not valid"))
+            return
+          end
+
+          if !(verify_crowd_password(attempted_record))
+            self.invalid_password = true
+            generalize_credentials_error_messages? ?
+            add_general_credentials_error :
+              errors.add(password_field, I18n.t('error_messages.password_invalid', :default => "is not valid"))
+            return
           end
         end
-        
-        def ldap_host
-          self.class.ldap_host
+
+        def verify_crowd_password(attempted_record)
+          password = attempted_record.send(verify_password_method, send("protected_#{password_field}"))
         end
-        
-        def ldap_port
-          self.class.ldap_port
+
+        def crowd_application_password
+          self.class.crowd_application_password
+        end
+
+        def crowd_application_name
+          self.class.crowd_application_name
+        end
+        def crowd_base_url
+          self.class.crowd_base_url
         end
     end
   end
