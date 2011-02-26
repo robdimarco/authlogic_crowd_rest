@@ -8,14 +8,15 @@ module AuthlogicCrowdRest
     end
     
     module Config
-      # The host of your LDAP server.
+      # The URL of your crowd rest API.  Should be
+      # something like https://localhost:8095/crowd/rest
       #
       # * <tt>Default:</tt> nil
       # * <tt>Accepts:</tt> String
-      def ldap_host(value = nil)
-        config(:ldap_host, value)
+      def crowd_base_url(value = nil)
+        config(:crowd_ba, value)
       end
-      alias_method :ldap_host=, :ldap_host
+      alias_method :ldap_host=, :crowd_host
       
       # The port of your LDAP server.
       #
