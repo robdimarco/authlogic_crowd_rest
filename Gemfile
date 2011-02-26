@@ -10,4 +10,5 @@ group :development do
   gem "actionpack"
   gem "activerecord", :require=>"active_record"
   gem "sqlite3"
+  gem "webmock"
 end

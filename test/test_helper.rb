@@ -15,10 +15,18 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'active_record'
 require 'authlogic'
 require 'authlogic_crowd_rest'
+require 'webmock/test_unit'
+require 'logger'
 
-ActiveRecord::Schema.verbose = false
+
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
 ActiveRecord::Base.configurations = true
+if ENV['VERBOSE'] == "true"
+  ActiveRecord::Schema.verbose = true
+  ActiveRecord::Base.logger = Logger.new(STDOUT)
+else
+  ActiveRecord::Schema.verbose = false
+end
 ActiveRecord::Schema.define(:version => 1) do
   create_table :users do |t|
     t.datetime  :created_at
@@ -43,24 +51,9 @@ ActiveRecord::Schema.define(:version => 1) do
   end
 end
 
-# require File.dirname(__FILE__) + '/libs/user'
-# require File.dirname(__FILE__) + '/libs/user_session'
-
-# class ActiveSupport::TestCase
-#   include ActiveRecord::TestFixtures
-#   self.fixture_path = File.dirname(__FILE__) + "/fixtures"
-#   self.use_transactional_fixtures = false
-#   self.use_instantiated_fixtures  = false
-#   self.pre_loaded_fixtures = false
-#   fixtures :all
-#   setup :activate_authlogic
-  
-#   private
-#     def activate_authlogic
-#       Authlogic::Session::Base.controller = controller
-#     end
-    
-#     def controller
-#       @controller ||= Authlogic::ControllerAdapters::RailsAdapter.new(ActionController.new)
-#     end
-# end
+require File.dirname(__FILE__) + '/libs/user'
+require File.dirname(__FILE__) + '/libs/user_session'
+require 'authlogic/test_case'
+class ActiveSupport::TestCase
+  setup :activate_authlogic
+end
