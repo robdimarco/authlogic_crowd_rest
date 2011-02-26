@@ -1,6 +1,29 @@
-= authlogic_crowd_rest
+= Authlogic Plugin for Atlassian Crowd
 
-Description goes here.
+Authlogic Crowd Rest is an extension of the Authlogic library to add support for validation against Atlassian Crowd REST apis.
+
+
+== Helpful links
+
+*	<b>Documentation:</b> http://github.com/robdimarco/authlogic_crowd_rest
+*	<b>Authlogic:</b> http://github.com/binarylogic/authlogic
+*       <b>Atlassian Crowd:</b> http://www.atlassian.com/software/crowd/
+*       <b>Atlassian Crowd REST API:</b> http://confluence.atlassian.com/display/CROWDDEV/Crowd+REST+APIs
+
+== Install and use
+
+=== 1. Add the Authlogic Crowd REST plugin to your Gemfile
+  gem "authlogic_crowd_rest"
+
+=== 2. You will need to configure crowd for use with the following three configuration pieces to User like so:
+
+class User < ActiveRecord::Base
+  acts_as_authentic do |c|
+    c.crowd_base_url "http://localhost:8095/crowd/console"
+    c.crowd_application_name "myapp"      # Name of the application in Crowd
+    c.crowd_application_password "bogus"  # Password assigned to the application in Crowd
+  end
+end
 
 == Contributing to authlogic_crowd_rest
  
