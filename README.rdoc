@@ -17,12 +17,10 @@ Authlogic Crowd Rest is an extension of the Authlogic library to add support for
 
 === 2. You will need to configure crowd for use with the following three configuration pieces to User like so:
 
-class User < ActiveRecord::Base
-  acts_as_authentic do |c|
-    c.crowd_base_url "http://localhost:8095/crowd/console"
-    c.crowd_application_name "myapp"      # Name of the application in Crowd
-    c.crowd_application_password "bogus"  # Password assigned to the application in Crowd
-  end
+class UserSession < Authlogic::Session::Base
+  crowd_base_url "http://localhost:8095/crowd/console" # URL to crowd
+  crowd_application_name "myapp"      # Name of the application in Crowd
+  crowd_application_password "bogus"  # Password assigned to the application in Crowd
 end
 
 == Contributing to authlogic_crowd_rest

@@ -80,8 +80,9 @@ module AuthlogicCrowdRest
           uri = URI.parse(send("crowd_base_url"))
 
           begin
-            Net::HTTP.start(uri.host, uri.port) {|http|
-              http.use_ssl = uri.scheme == "https"
+            http = Net::HTTP.new(uri.host, uri.port)
+            http.use_ssl = uri.scheme == "https"
+            http.start {|http|
               req = Net::HTTP::Post.new(uri.path + "?" + "username=#{attempted_record.login}")
               req.basic_auth send("crowd_application_name"), send("crowd_application_password")
               req.body="<password><value>#{send("protected_#{password_field}")}</value></password>"
