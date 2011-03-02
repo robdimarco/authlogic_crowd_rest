@@ -77,7 +77,7 @@ module AuthlogicCrowdRest
           password = attempted_record.send(verify_password_method, send("protected_#{password_field}"))
           require 'net/http'
           require 'net/https'
-          uri = URI.parse(send("crowd_base_url"))
+          uri = URI.parse(send("crowd_base_url") + "/rest/usermanagement/latest/authentication")
 
           begin
             http = Net::HTTP.new(uri.host, uri.port)
