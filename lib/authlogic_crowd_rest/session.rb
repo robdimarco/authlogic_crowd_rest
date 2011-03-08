@@ -94,8 +94,6 @@ module AuthlogicCrowdRest
         end
 
         def validate_by_crowd_rest
-          self.invalid_password = false
-
           errors.add(:crowd_login, I18n.t('error_messages.crowd_login_blank', :default => "can not be blank")) if crowd_login.blank?
           errors.add(:crowd_password, I18n.t('error_messages.crowd_password_blank', :default => "can not be blank")) if crowd_password.blank?
           return if errors.count > 0
@@ -109,11 +107,7 @@ module AuthlogicCrowdRest
           end
 
           if !(send( :verify_crowd_password, attempted_record))
-            self.invalid_password = true
-            generalize_credentials_error_messages? ?
-            add_general_credentials_error :
-              errors.add("crowd_password", I18n.t('error_messages.crowd_password_invalid', :default => "is not valid"))
-            return
+            errors.add_to_base(I18n.t('error_messages.crowd_password_invalid', :default => "Password is not valid"))
           end
         end
 
