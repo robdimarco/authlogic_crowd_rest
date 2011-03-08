@@ -70,7 +70,7 @@ module AuthlogicCrowdRest
       def credentials
         if authenticating_with_crowd_rest?
           details = {}
-          details[:crowd_login] = send(login_field)
+          details[:crowd_login] = crowd_login
           details[:crowd_password] = "<protected>"
           details
         else
