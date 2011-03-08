@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rob Di Marco"]
-  s.date = %q{2011-02-26}
+  s.date = %q{2011-03-07}
   s.description = %q{Foo}
   s.email = %q{rob.dimarco@416software.com}
   s.extra_rdoc_files = [
@@ -39,7 +39,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/robdimarco/authlogic_crowd_rest}
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.5.2}
+  s.rubygems_version = %q{1.6.0}
   s.summary = %q{An Authlogic plugin to connect with Atlassian Crowd REST APIs}
   s.test_files = [
     "test/acts_as_authentic_test.rb",
