@@ -32,15 +32,13 @@ ActiveRecord::Schema.define(:version => 1) do
     t.datetime  :created_at
     t.datetime  :updated_at
     t.integer   :lock_version, :default => 0
-    t.string    :login
-    t.string    :crypted_password
-    t.string    :password_salt
     t.string    :persistence_token
     t.string    :single_access_token
     t.string    :perishable_token
     t.string    :email
     t.string    :first_name
     t.string    :last_name
+    t.string    :crowd_login
     t.integer   :login_count, :default => 0, :null => false
     t.integer   :failed_login_count, :default => 0, :null => false
     t.datetime  :last_request_at
