@@ -1,5 +1,8 @@
 = Authlogic Plugin for Atlassian Crowd
 
+<h1>This plugin is under development</h1>
+Use at your own risk.  Pull requests welcome.
+
 Authlogic Crowd Rest is an extension of the Authlogic library to add support for validation against Atlassian Crowd REST apis.
 
 

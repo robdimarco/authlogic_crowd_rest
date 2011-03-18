@@ -65,8 +65,8 @@ module AuthlogicCrowdRest
         end
       end
 
-      # Hooks into credentials so that you can pass an :ldap_login and :ldap_password key.
-      # Hooks into credentials to print out meaningful credentials for LDAP authentication.
+      # Hooks into credentials so that you can pass an :crowd_login and :crowd_password key.
+      # Hooks into credentials to print out meaningful credentials for Crowd authentication.
       def credentials
         if authenticating_with_crowd_rest?
           details = {}
